@@ -88,7 +88,11 @@ class DataLoader(object):
         self.synthetic_data_dims = list(imread(self.synthetic_data_paths[0]).shape) + [1]
         self.synthetic_data_paths.sort()
 
-        
+        print "*"*50
+        print "talking from data loader"
+        print self.synthetic_data_paths
+        print self.real_data_paths
+        print "*"*50
 
         #if np.rank(self.real_data) == 3:
         if np.ndim(self.real_data) == 3:
