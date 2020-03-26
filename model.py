@@ -27,7 +27,7 @@ class Model(object):
     self._build_model()
     self._build_steps()
     self._build_optim()
-
+    self.saver = tf.train.Saver(self.refiner_vars)
     show_all_variables()
 
 
@@ -226,7 +226,7 @@ class Model(object):
           #t1 = [[1,2,3],[4,5,6]]
           #t2 = [[7,8,9],[10,11,12]]
           #tf.concat_v2([t1,t2],0) = [[1,2,3],[4,5,6],[7,8,9],[10,11,12]]
-          tf.concat_v2([self.refiner_d_loss, self.refiner_d_loss_with_history], axis=0) + \
+          tf.concat([self.refiner_d_loss, self.refiner_d_loss_with_history], axis=0) + \
               self.synthetic_d_loss, name="discrim_loss_with_history")
 
 
@@ -298,6 +298,7 @@ class Model(object):
           'loss': self.refiner_loss,
           'step': self.refiner_step,
       }
+      self.saver.restore(sess, tf.train.latest_checkpoint('/data/Gul_Zain/my-GANs/tf_gan/picked_gans/models-10_best_ever/'))
       return run(sess, feed_dict, fetch,
                  self.refiner_summary, summary_writer,
                  output_op=self.R_x if with_output else None)
@@ -333,7 +334,7 @@ class Model(object):
   def _build_refiner(self, layer):
     with tf.variable_scope("refiner") as sc:
       layer = repeat(layer, 10, resnet_block, scope="resnet")
-      layer = conv2d(layer, 1, 1, 1, 
+      layer = conv2d(layer, 1, 1, 1,
                      activation_fn=None, scope="conv_1")
       output = tanh(layer, name="tanh")
       self.refiner_vars = tf.contrib.framework.get_variables(sc)
