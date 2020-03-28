@@ -152,6 +152,10 @@ class Trainer(object):
   def _inject_summary(self, tag, feed_dict, step):
     summaries = self.sess.run(self.summary_ops[tag], feed_dict)
     self.summary_writer.add_summary(summaries['summary'], step)
+    # saving model
+    model_base_dir="./models/"
+    path_model =  os.path.join(model_base_dir,"{}".format(step))
+    self.saver.save(self.sess, path_model)
 
     path = os.path.join(
         self.config.sample_model_dir, "{}.png".format(step))
